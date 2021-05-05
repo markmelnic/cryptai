@@ -3,7 +3,7 @@ from cmc import CMC
 
 if __name__ == '__main__':
     cmc = CMC()
-    cmc.scrape()
+    cmc.index_coins()
     with open("coins.json", "w") as cfile:
         coins = {}
         print(len(cmc.coins))

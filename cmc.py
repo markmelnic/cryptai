@@ -13,10 +13,10 @@ class CMC:
     def __str__(self) -> str:
         return f'Indexed {len(self.coins)} coins'
 
-    def scrape(self):
+    def index_coins(self):
         r = BeautifulSoup(get(BASE_URL).content, "html.parser")
         pages = r.find(class_="pagination").find_all("li")[-2].get_text()
-        for i in range(1, int(pages)):
+        for i in range(1, int(pages) + 1):
             print(f"Indexing page {i}")
             r = get(BASE_URL + "?page=" + str(i))
             soup = BeautifulSoup(r.content, "html.parser")
