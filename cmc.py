@@ -1,3 +1,5 @@
+from db import *
+
 from requests import get
 from bs4 import BeautifulSoup
 
@@ -13,7 +15,7 @@ class CMC:
     def __str__(self) -> str:
         return f'Indexed {len(self.coins)} coins'
 
-    def index_coins(self):
+    def index_coins(self, db: Session = get_db()):
         r = BeautifulSoup(get(BASE_URL).content, "html.parser")
         pages = r.find(class_="pagination").find_all("li")[-2].get_text()
         for i in range(1, int(pages) + 1):
@@ -23,6 +25,14 @@ class CMC:
             trows = soup.find(name="tbody").find_all("tr", recursive=False)
             for c in self._scrape_page(trows):
                 self.coins.append(c)
+
+                coin = CoinModel(
+                    link=c.link,
+                    name=c.name,
+                    symbol=c.symbol
+                )
+                db.add(coin)
+        db.commit()
 
     def _scrape_page(self, trows):
         for tr in trows:
