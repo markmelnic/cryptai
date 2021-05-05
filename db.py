@@ -11,7 +11,7 @@ DB_BASE = declarative_base()
 def get_db():
     return DB_SES_LOCAL()
 
-class CoinModel(DB_BASE):
+class Coin(DB_BASE):
     __tablename__ = 'coins'
 
     id = Column(Integer, primary_key=True, index=True)
