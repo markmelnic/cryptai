@@ -7,8 +7,16 @@ BASE_URL = "https://coinmarketcap.com/"
 BASE_GL = "https://coinmarketcap.com/gainers-losers/"
 
 class CMC:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, load_db=True) -> None:
+        self.coins = []
+
+        if load_db:
+            self.__load_db()
+            if self.coins == []:
+                self.index_coins(add=True)
+                self.__load_db()
+        else:
+            self.coins = []
 
     def __repr__(self) -> str:
         return f'Indexed {len(self.coins)} coins'
@@ -27,6 +35,10 @@ class CMC:
             trows = soup.find(name="tbody").find_all("tr", recursive=False)
             for c in self._scrape_page(trows):
                 coins.append(c)
+
+        if add:
+            self._add_to_db(coins)
+
         return coins
 
     def get_gl(self, type: bool) -> list:
@@ -85,7 +97,11 @@ class CMC:
                 name=c.name,
                 symbol=c.symbol
             ))
-            db.commit()
+        db.commit()
+
+    def __load_db(self) -> None:
+        db = get_db()
+        self.coins = db.query(Coin).all()
 
 class CNC_Coin:
     def __init__(self, **kw) -> None:
