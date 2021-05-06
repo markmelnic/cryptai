@@ -1,7 +1,7 @@
 from os import getenv
 
 from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 DB_ENGINE = create_engine(getenv('DB_URI'))

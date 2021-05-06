@@ -1,5 +1,3 @@
-from enum import Enum
-
 class Xpaths:
     # Coin Page
     class CP:
