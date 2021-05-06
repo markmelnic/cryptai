@@ -1,6 +1,8 @@
 from db import *
+from xpaths import *
 
 from requests import get
+from requests_html import HTMLSession
 from bs4 import BeautifulSoup
 
 BASE_URL = "https://coinmarketcap.com/"
@@ -8,6 +10,7 @@ BASE_GL = "https://coinmarketcap.com/gainers-losers/"
 
 class CMC:
     def __init__(self, load_db=True) -> None:
+        self.ses = HTMLSession()
         self.coins = []
 
         if load_db:
@@ -26,8 +29,8 @@ class CMC:
 
     def index_coins(self, add=False) -> list:
         coins = []
-        r = BeautifulSoup(get(BASE_URL).content, "html.parser")
-        pages = r.find(class_="pagination").find_all("li")[-2].get_text()
+        soup = BeautifulSoup(get(BASE_URL).content, "html.parser")
+        pages = soup.find(class_="pagination").find_all("li")[-2].get_text()
         for i in range(1, int(pages) + 1):
             print(f"Indexing page {i}")
             r = get(BASE_URL + "?page=" + str(i))
@@ -61,6 +64,18 @@ class CMC:
             self._add_to_db(new_coins)
 
         return new_coins
+
+    def fetch_coins(self, coins: list) -> list:
+        return [self.fetch_coin(c.link) for c in coins]
+
+    def fetch_coin(self, url: str) -> dict:
+        coin = {}
+        r = self.ses.get(BASE_URL[:-1] + url)
+        coin['price'] = r.html.xpath(Xpaths.CP.price)[0].text
+        coin['volume'] = r.html.xpath(Xpaths.CP.volume)[0].text
+        coin['cnc_rank'] = r.html.xpath(Xpaths.CP.cnc_rank)[0].text
+
+        return coin
 
     def _scrape_gl(self, table: BeautifulSoup) -> list:
         gl_coins = []
