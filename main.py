@@ -22,11 +22,13 @@ while True:
 
         for c in new_coins:
             print(f"{c.name} sent")
-            bot.send_message(f"""
-            {c.name} - {c.symbol}
-            {BASE_URL[:-1] + c.link}
-            """)
+            bot.send_message(
+                f"""
+                {c.name} - {c.symbol}
+                {BASE_URL[:-1] + c.link}
+                """
+            )
 
-        print(f"Success, waiting {INTERVAL}")
+        print(f"Success, waiting {INTERVAL} seconds")
 
     sleep(INTERVAL)
