@@ -1,3 +1,6 @@
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+
 from db import *
 from xpaths import *
 
@@ -32,6 +35,7 @@ class CMC:
         soup = BS(get(BASE_URL).content, "html.parser")
         pages = soup.find(class_="pagination").find_all("li")[-2].get_text()
         for i in range(1, int(pages) + 1):
+            logging.info(f'Indexing page {i}')
             r = get(BASE_URL + "?page=" + str(i))
             soup = BS(r.content, "html.parser")
             trows = soup.find(name="tbody").find_all("tr", recursive=False)
@@ -69,11 +73,18 @@ class CMC:
 
     def fetch_coin(self, url: str) -> dict:
         r = self.ses.get(BASE_URL[:-1] + url)
-        return {
-            'price': r.html.xpath(Xpaths.CP.price)[0].text,
-            'volume': r.html.xpath(Xpaths.CP.volume)[0].text,
-            'cnc_rank': r.html.xpath(Xpaths.CP.cnc_rank)[0].text
-        }
+        try:
+            return {
+                'price': r.html.xpath(Xpaths.CP.price)[0].text,
+                'volume': r.html.xpath(Xpaths.CP.volume)[0].text,
+                'cnc_rank': r.html.xpath(Xpaths.CP.cnc_rank)[0].text
+            }
+        except:
+            return {
+                'price': "",
+                'volume': "",
+                'cnc_rank': ""
+            }
 
     def _scrape_gl(self, table: BS) -> list:
         gl_coins = []
@@ -106,7 +117,7 @@ class CMC:
         db = get_db()
         for c in coins:
             db.add(c)
-        db.commit()
+            db.commit()
 
     def __load_db(self) -> None:
         db = get_db()
