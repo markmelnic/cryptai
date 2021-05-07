@@ -5,11 +5,17 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 DB_ENGINE = create_engine(getenv('DB_URI'))
-DB_SES_LOCAL = sessionmaker(bind=DB_ENGINE, autocommit=False, autoflush=False,)
+DB_SESSION = sessionmaker(
+    bind=DB_ENGINE,
+    autocommit=False,
+    autoflush=False,
+    expire_on_commit=False
+)
+
 DB_BASE = declarative_base()
 
 def get_db():
-    return DB_SES_LOCAL()
+    return DB_SESSION()
 
 class Coin(DB_BASE):
     __tablename__ = 'coins'

@@ -1,14 +1,17 @@
 
 import logging
 from time import sleep
+from telegram import Bot
 from cmc import CMC, BASE_URL
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(funcName)s - %(message)s')
 
 INTERVAL = 3600
 
-def new_coins_indexer(bot) -> None:
+def new_coins_indexer() -> None:
+    bot = Bot()
     cmc = CMC(load_db=True)
+
     while True:
         logging.info(f'Started indexing new coins')
         new_coins = cmc.check_new(add=True)
@@ -31,6 +34,6 @@ def new_coins_indexer(bot) -> None:
                     # f"\nCMC Rank: {details['cnc_rank']}"
                 )
                 logging.info(f'#{c.symbol} - {c.name}: Notification sent')
-            logging.info(f'{len(new_coins)} new coins have been found. Waiting {INTERVAL} seconds')
+        logging.info(f'{len(new_coins)} new coins have been found. Waiting {INTERVAL} seconds')
 
         sleep(INTERVAL)

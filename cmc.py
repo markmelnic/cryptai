@@ -36,6 +36,7 @@ class CMC:
         pages = soup.find(class_="pagination").find_all("li")[-2].get_text()
         for i in range(1, int(pages) + 1):
             logging.info(f'Indexing page {i}')
+
             r = get(BASE_URL + "?page=" + str(i))
             soup = BS(r.content, "html.parser")
             trows = soup.find(name="tbody").find_all("tr", recursive=False)
