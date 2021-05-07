@@ -19,4 +19,10 @@ class Coin(DB_BASE):
     name = Column(String)
     symbol = Column(String)
 
+    def __repr__(self) -> str:
+        return f'{self.symbol} - {self.name}'
+
+    def __str__(self) -> str:
+        return f'{self.symbol} - {self.name}'
+
 DB_BASE.metadata.create_all(DB_ENGINE)

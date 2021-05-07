@@ -12,15 +12,13 @@ bot = Bot()
 
 while True:
     new_coins = cmc.check_new(add=True)
-    print(f"{len(new_coins)} new coins found")
     if new_coins:
-        print("Sending notifications...")
         if len(new_coins) == 1:
             pass
-            #bot.send_message("❗ A new coin just hit the market	❗")
+            bot.send_message("❗ A new coin just hit the market	❗")
         else:
             pass
-            #bot.send_message("❗ New coins just hit the market ❗")
+            bot.send_message("❗ New coins just hit the market ❗")
 
         for c in new_coins:
             details = cmc.fetch_coin(c.link)
@@ -30,10 +28,7 @@ while True:
                 f"\n{BASE_URL[:-1] + c.link}\n"
                 f"\nPrice: {details['price']}"
                 f"\nVolume (24h): {details['volume']}"
-                f"\nCMC Rank: {details['cnc_rank']}"
+                # f"\nCMC Rank: {details['cnc_rank']}"
             )
-            print(f"{c.name} sent")
-
-        print(f"Success, waiting {INTERVAL} seconds")
 
     sleep(INTERVAL)
