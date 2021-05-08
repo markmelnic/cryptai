@@ -48,7 +48,7 @@ class CMC:
 
         return coins
 
-    def get_gl(self, type: bool) -> list:
+    def index_gl(self, type: bool) -> list:
         soup = BS(get(BASE_GL).content, "html.parser")
         tables = soup.find_all(class_="cmc-table")
 
@@ -88,11 +88,8 @@ class CMC:
             }
 
     def _scrape_gl(self, table: BS) -> list:
-        gl_coins = []
         trows = table.find("tbody").find_all("tr", recursive=False)
-        for c in self._scrape_page(trows):
-            gl_coins.append(c)
-        return gl_coins
+        return [c for c in self._scrape_page(trows)]
 
     def _scrape_page(self, trows):
         for tr in trows:

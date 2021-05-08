@@ -2,7 +2,7 @@
 import logging
 from time import sleep
 from telegram import Bot
-from cmc import CMC, BASE_URL
+from cmc import CMC, BASE_URL, BASE_GL
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(funcName)s - %(message)s')
 
@@ -37,3 +37,27 @@ def new_coins_indexer() -> None:
         logging.info(f'{len(new_coins)} new coins have been found. Waiting {INTERVAL} seconds')
 
         sleep(INTERVAL)
+
+def daily_gl_indexer() -> None:
+    bot = Bot()
+    cmc = CMC(load_db=True)
+
+    while True:
+        logging.info(f'Started indexing daily gainers and losers')
+        gl_type = True
+        if gl_type:
+            message = f"❗ Top gainers today:"
+        else:
+            message = f"❗ Top losers today:"
+        gl_coins = cmc.index_gl(type=gl_type)
+
+        for i, c in enumerate(gl_coins):
+            if i == 3:
+                break
+            message += f"\n\n{i+1}. {c.name} - {c.symbol}\n{BASE_URL[:-1] + c.link}"
+
+        message += f"\n\nBrowse all gainers and losers here:\n{BASE_GL}"
+        bot.send_message(message)
+        logging.info(f'GL process executed successfully. Waiting {INTERVAL*24} seconds')
+
+        sleep(INTERVAL*24)
