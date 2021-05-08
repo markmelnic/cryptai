@@ -46,17 +46,17 @@ def daily_gl_indexer() -> None:
         logging.info(f'Started indexing daily gainers and losers')
         gl_type = True
         if gl_type:
-            message = f"❗ Top gainers today:"
+            message = f"❗ Top gainers today ❗"
         else:
-            message = f"❗ Top losers today:"
+            message = f"❗ Top losers today ❗"
         gl_coins = cmc.index_gl(type=gl_type)
+        message += f"\nBrowse all gainers and losers here:\n{BASE_GL}"
 
         for i, c in enumerate(gl_coins):
             if i == 3:
                 break
-            message += f"\n\n{i+1}. {c.name} - {c.symbol}\n{BASE_URL[:-1] + c.link}"
+            message += f"\n\n{i+1}. {c.symbol} - {c.name}\n{BASE_URL[:-1] + c.link}"
 
-        message += f"\n\nBrowse all gainers and losers here:\n{BASE_GL}"
         bot.send_message(message)
         logging.info(f'GL process executed successfully. Waiting {INTERVAL*24} seconds')
 
