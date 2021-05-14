@@ -33,15 +33,17 @@ class CMC:
     def index_coins(self, add=False) -> list:
         coins = []
         soup = BS(get(BASE_URL).content, "html.parser")
-        pages = soup.find(class_="pagination").find_all("li")[-2].get_text()
+        try:
+            pages = soup.find(class_="pagination").find_all("li")[-2].get_text()
+        except:
+            return []
         for i in range(1, int(pages) + 1):
-            logging.info(f'Indexing page {i}')
-
             r = get(BASE_URL + "?page=" + str(i))
             soup = BS(r.content, "html.parser")
             trows = soup.find(name="tbody").find_all("tr", recursive=False)
             for c in self._scrape_page(trows):
                 coins.append(c)
+        logging.info(f'Logged all {int(pages) + 1} pages')
 
         if add:
             self._add_to_db(coins)
