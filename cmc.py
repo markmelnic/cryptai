@@ -35,14 +35,15 @@ class CMC:
         soup = BS(get(BASE_URL).content, "html.parser")
         try:
             pages = soup.find(class_="pagination").find_all("li")[-2].get_text()
+            for i in range(1, int(pages) + 1):
+                r = get(BASE_URL + "?page=" + str(i))
+                soup = BS(r.content, "html.parser")
+                trows = soup.find(name="tbody").find_all("tr", recursive=False)
+                for c in self._scrape_page(trows):
+                    coins.append(c)
         except:
             return []
-        for i in range(1, int(pages) + 1):
-            r = get(BASE_URL + "?page=" + str(i))
-            soup = BS(r.content, "html.parser")
-            trows = soup.find(name="tbody").find_all("tr", recursive=False)
-            for c in self._scrape_page(trows):
-                coins.append(c)
+
         logging.info(f'Logged all {int(pages) + 1} pages')
 
         if add:
@@ -75,19 +76,13 @@ class CMC:
         return [self.fetch_coin(c.link) for c in coins]
 
     def fetch_coin(self, url: str) -> dict:
-        r = self.ses.get(BASE_URL[:-1] + url)
         try:
-            return {
-                'price': r.html.xpath(Xpaths.CP.price)[0].text,
-                'volume': r.html.xpath(Xpaths.CP.volume)[0].text,
-                'cnc_rank': r.html.xpath(Xpaths.CP.cnc_rank)[0].text
-            }
+            r = self.ses.get(BASE_URL[:-1] + url)
+            message  = f"\nPrice: {r.html.xpath(Xpaths.CP.price)[0].text}"
+            message += f"\nVolume: {r.html.xpath(Xpaths.CP.volume)[0].text}"
+            message += f"\nCNC Rank: {r.html.xpath(Xpaths.CP.v)[0].text}"
         except:
-            return {
-                'price': "",
-                'volume': "",
-                'cnc_rank': ""
-            }
+            return ""
 
     def _scrape_gl(self, table: BS) -> list:
         trows = table.find("tbody").find_all("tr", recursive=False)

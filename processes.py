@@ -25,13 +25,11 @@ def new_coins_indexer() -> None:
 
             for c in new_coins:
                 logging.info(f'#{c.symbol} - {c.name}: Sending notification')
-                details = cmc.fetch_coin(c.link)
+                message = cmc.fetch_coin(c.link)
                 bot.send_message(
                     f"{c.name} - {c.symbol}"
-                    f"\n{BASE_URL[:-1] + c.link}\n"
-                    f"\nPrice: {details['price']}"
-                    f"\nVolume (24h): {details['volume']}"
-                    # f"\nCMC Rank: {details['cnc_rank']}"
+                    f"\n{BASE_URL[:-1] + c.link}\n" +
+                    message
                 )
                 logging.info(f'#{c.symbol} - {c.name}: Notification sent')
         logging.info(f'{len(new_coins)} new coins have been found. Waiting {INTERVAL} seconds')
